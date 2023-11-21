@@ -22,7 +22,9 @@ const MovieComponent: React.FC = () => {
     const params = useParams();
     const [isStarted, setIsStarted] = useState<boolean>(false);
     const [currentSubText, setCurrentSubText] = useState<string>('');
-    const [timerId, setTimerId] = useState<number>(0);
+    const [subtitleChangeTimerId, setSubtitleChangeTimerId] = useState<number>(0);
+    const [hideToolbarTimerId, setHideToolbarTimerId] = useState<number>(0);
+    const [isToolbarShown, setIsToolbarShown] = useState<boolean>(true);
 
     useEffect(() => {
         const movie = getMovie();
@@ -30,6 +32,8 @@ const MovieComponent: React.FC = () => {
         if (movie && movie.isStarted) {
             startTimer(movie);
         }
+
+        hideToolbar();
     }, []);
 
     const startTimer = (movie?: IMovie): void => {
@@ -63,7 +67,7 @@ const MovieComponent: React.FC = () => {
         movie.rewindMs = 0;
         localStorage.setItem(getMovieKey(), JSON.stringify(movie));
         setIsStarted(false);
-        window.clearTimeout(timerId);
+        window.clearTimeout(subtitleChangeTimerId);
         setCurrentSubText('');
     };
 
@@ -97,7 +101,7 @@ const MovieComponent: React.FC = () => {
                 ? movie.subtitles[0].startSeconds
                 : (movie.subtitles[index + 1].startSeconds - movie.subtitles[index].startSeconds);
 
-            setTimerId(window.setTimeout(() => {
+            setSubtitleChangeTimerId(window.setTimeout(() => {
                 index++;
                 showSubs(movie, index);
             }, interval * 1000));
@@ -106,8 +110,8 @@ const MovieComponent: React.FC = () => {
         }
     }
 
-    const rewind = (seconds: number) => {
-        window.clearTimeout(timerId);
+    const rewind = (seconds: number): void => {
+        window.clearTimeout(subtitleChangeTimerId);
 
         const movie = getMovie();
 
@@ -122,13 +126,25 @@ const MovieComponent: React.FC = () => {
         showSubs(movie, getIndex(movie));
     };
 
-    const getIndex = (movie: IMovie) => {
+    const getIndex = (movie: IMovie): number => {
         const startTimestamp = movie.startTimestamp + movie.rewindMs;
         return movie.subtitles.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
     };
 
-    return <div className="MovieComponent">
-        <div className='buttons'>
+    const hideToolbar = (): void => {
+        setHideToolbarTimerId(window.setTimeout(() => {
+            setIsToolbarShown(false);
+        }, 10000));
+    };
+
+    const showToolbar = (): void => {
+        window.clearTimeout(hideToolbarTimerId);
+        setIsToolbarShown(true);
+        hideToolbar();
+    };
+
+    return <div className="MovieComponent" onClick={showToolbar}>
+        <div className={`buttons ${!isToolbarShown && 'hidden'}`}>
         {
                 isStarted && <>
                     <button onClick={() => rewind(30)}>-30s</button>

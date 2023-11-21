@@ -8,6 +8,11 @@
     flex: 0 1 50px;
     display: flex;
     justify-content: center;
+    transition: transform 1s;
+}
+
+.MovieComponent .buttons.hidden {
+    transform: translateY(-50px);
 }
 
 .MovieComponent .buttons button {
