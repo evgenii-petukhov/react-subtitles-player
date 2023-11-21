@@ -34,6 +34,7 @@ a, a:visited {
 .toolbar button {
     min-width: 100px;
     border-radius: 25px;
+    border: none;
 }
 
 .toolbar a {
@@ -54,6 +55,7 @@ a, a:visited {
 .bottom-toolbar button {
     min-width: 100px;
     border-radius: 25px;
+    border: none;
 }
 
 .bottom-toolbar a {
