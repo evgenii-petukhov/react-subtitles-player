@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Parser from 'srt-parser-2';
 import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
 import './AddMovieComponent.css';
@@ -9,7 +9,7 @@ interface IState {
 }
 
 const AddMovieComponent: React.FC = () => {
-    const formRef = useRef<HTMLFormElement>(null);
+    let formRef: HTMLFormElement | null = null;
 
     const [data, setData] = useState<IState>({
         name: '',
@@ -41,11 +41,15 @@ const AddMovieComponent: React.FC = () => {
     };
 
     const onSubmitClicked = (): void => {
-        formRef.current?.submit();
+        formRef?.requestSubmit();
+    };
+
+    const getFormRefWraper = (node: HTMLFormElement) => {
+        formRef = formRef ?? node;
     };
 
     return <div className='AddMovieComponent'>
-        <form ref={formRef} onSubmit={onFormSubmitted}>
+        <form ref={getFormRefWraper} onSubmit={onFormSubmitted}>
             <div className='form-row'>
                 Name: <input type='text'
                     value={data?.name}
