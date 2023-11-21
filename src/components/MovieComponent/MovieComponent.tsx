@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './MovieComponent.css';
 import { useParams } from 'react-router-dom';
 import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 
 interface ISubtitle {
     id: string;
@@ -21,6 +22,7 @@ interface IMovie {
 
 const MovieComponent: React.FC = () => {
     const params = useParams();
+    const fullscreen = useFullScreenHandle();
     const [isStarted, setIsStarted] = useState<boolean>(false);
     const [currentSubText, setCurrentSubText] = useState<string>('');
     const [subtitleChangeTimerId, setSubtitleChangeTimerId] = useState<number>(0);
@@ -144,30 +146,37 @@ const MovieComponent: React.FC = () => {
         hideToolbar();
     };
 
+    const enterFullscreen = (): void => {
+        fullscreen.enter();
+    };
+
     return <div className="MovieComponent" onClick={showToolbar}>
-        <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
-        {
-                isStarted && <>
-                    <button onClick={() => rewind(30)}>-30s</button>
-                    <button onClick={() => rewind(5)}>-5s</button>
-                </>  
-            }
+        <FullScreen handle={fullscreen}>
+            <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
             {
-                isStarted
-                    ? <button onClick={() => stopTimer()}>Stop</button>
-                    : <button onClick={() => startTimer()}>Start</button>
-            }
-            {
-                isStarted && <>
-                    <button onClick={() => rewind(-5)}>+5s</button>
-                    <button onClick={() => rewind(-30)}>+30s</button>
-                </>  
-            }
-        </div>
-        <div className='text-container'>
-            <div className='text'>{currentSubText}</div>
-        </div>
-        <BackButtonComponent isToolbarShown={isToolbarShown} />
+                    isStarted && <>
+                        <button onClick={() => rewind(30)}>-30s</button>
+                        <button onClick={() => rewind(5)}>-5s</button>
+                    </>  
+                }
+                {
+                    isStarted
+                        ? <button onClick={() => stopTimer()}>Stop</button>
+                        : <button onClick={() => startTimer()}>Start</button>
+                }
+                {!fullscreen.active && <button onClick={() => enterFullscreen()}>Fullscreen</button>}
+                {
+                    isStarted && <>
+                        <button onClick={() => rewind(-5)}>+5s</button>
+                        <button onClick={() => rewind(-30)}>+30s</button>
+                    </>  
+                }
+            </div>
+            <div className='text-container'>
+                <div className='text'>{currentSubText}</div>
+            </div>
+            <BackButtonComponent isToolbarShown={isToolbarShown} />
+        </FullScreen>
     </div>
 };
 
