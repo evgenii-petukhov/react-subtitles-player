@@ -4,7 +4,7 @@ import MovieListComponent from './components/MovieListComponent/MovieListCompone
 import MovieComponent from './components/MovieComponent/MovieComponent';
 
 const App: React.FC = () => (
-	<BrowserRouter>
+	<BrowserRouter basename='react-subtitles-player'>
 		<Routes>
 			<Route path="/" element={<MovieListComponent />} />
 			<Route path="/add" element={<AddMovieComponent />} />
