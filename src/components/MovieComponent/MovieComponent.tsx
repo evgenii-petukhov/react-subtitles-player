@@ -15,7 +15,6 @@ interface IMovie {
     subtitles: ISubtitle[];
     isStarted: boolean;
     startTimestamp: number;
-    lastDisplayedIndex: number;
 }
 
 const MovieComponent: React.FC = () => {
@@ -33,31 +32,34 @@ const MovieComponent: React.FC = () => {
     }, []);
 
     const startTimer = (movie?: IMovie): void => {
-        if (movie) {
-            showSubs({
-                isStarted: true,
-                lastDisplayedIndex: movie.lastDisplayedIndex,
-                startTimestamp: movie.startTimestamp,
-                subtitles: movie.subtitles
-            });
-        } else {
-            movie = movie ?? getMovie();
+        var index = -1;
 
-            if (movie) {
-                showSubs({
-                    isStarted: true,
-                    lastDisplayedIndex: -1,
-                    startTimestamp: new Date().getTime(),
-                    subtitles: movie.subtitles
-                });
+        if (movie) {
+            const startTimestamp = movie.startTimestamp;
+            index = movie.subtitles.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
+        } else {
+            movie = getMovie();
+
+            if (!movie) {
+                return; 
             }
+
+            movie.startTimestamp = new Date().getTime();
         }
 
+        movie.isStarted = true;
+        localStorage.setItem(getMovieKey(), JSON.stringify(movie));
         setIsStarted(true);
+        showSubs(movie, index);
     };
 
-    const stopTimer = (): void => {
-        localStorage.setItem('isStarted', '0');
+    const stopTimer = (movie?: IMovie): void => {
+        movie = movie ?? getMovie();
+        if (!movie) {
+            return;
+        }
+        movie.isStarted = false;
+        localStorage.setItem(getMovieKey(), JSON.stringify(movie));
         setIsStarted(false);
         window.clearTimeout(timerId);
         setCurrentSubText('');
@@ -71,7 +73,6 @@ const MovieComponent: React.FC = () => {
                 subtitles: movie.subtitles,
                 isStarted: movie.isStarted ?? false,
                 startTimestamp: movie.startTimestamp ?? 0,
-                lastDisplayedIndex: movie.lastDisplayedIndex ?? -1
             } : undefined;
     }
 
@@ -79,36 +80,26 @@ const MovieComponent: React.FC = () => {
         return `movie:${params.id}`;
     }
 
-    const showSubs = (movie:IMovie): void => {
+    const showSubs = (movie:IMovie, index: number): void => {
         if (!movie.subtitles || !movie.isStarted || !movie.startTimestamp) {
             return;
         }
 
-        if (movie.startTimestamp) {
-            movie.lastDisplayedIndex = movie.subtitles.findIndex(x => (movie.startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
-            if (timerId) {
-                window.clearTimeout(timerId);
-            }
+        if (index > -1) {
+            setCurrentSubText(movie.subtitles[index].text);
         }
 
-        if (movie.lastDisplayedIndex > -1) {
-            setCurrentSubText(movie.subtitles[movie.lastDisplayedIndex].text);
-        }
-
-        localStorage.setItem(getMovieKey(), JSON.stringify(movie));
-
-        if (movie.lastDisplayedIndex < movie.subtitles.length - 1) {
-            const interval = movie.lastDisplayedIndex === -1
+        if (index < movie.subtitles.length - 1) {
+            const interval = index === -1
                 ? movie.subtitles[0].startSeconds
-                : (movie.subtitles[movie.lastDisplayedIndex + 1].startSeconds - movie.subtitles[movie.lastDisplayedIndex].startSeconds);
+                : (movie.subtitles[index + 1].startSeconds - movie.subtitles[index].startSeconds);
 
             setTimerId(window.setTimeout(() => {
-                movie.lastDisplayedIndex++;
-                localStorage.setItem('currentIndex', movie.lastDisplayedIndex.toString());
-                showSubs(movie);
+                index++;
+                showSubs(movie, index);
             }, interval * 1000));
         } else {
-            stopTimer();
+            stopTimer(movie);
         }
     }
 
@@ -116,7 +107,7 @@ const MovieComponent: React.FC = () => {
         <div>
         {
             isStarted
-                ? <button onClick={stopTimer}>Stop</button>
+                ? <button onClick={() => stopTimer()}>Stop</button>
                 : <button onClick={() => startTimer()}>Start</button>
         }
         </div>
