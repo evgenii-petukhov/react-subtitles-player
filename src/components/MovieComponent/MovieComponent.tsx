@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './MovieComponent.css';
-import { useParams, useSubmit } from 'react-router-dom';
-import Parser from 'srt-parser-2';
+import { useParams } from 'react-router-dom';
 
-interface ISubtitles {
+interface ISubtitle {
     id: string;
     startTime: string;
     startSeconds: number;
@@ -12,46 +11,49 @@ interface ISubtitles {
     text: string;
 }
 
+interface IMovie {
+    subtitles: ISubtitle[];
+    isStarted: boolean;
+    startTimestamp: number;
+    lastDisplayedIndex: number;
+}
+
 const MovieComponent: React.FC = () => {
     const params = useParams();
     const [isStarted, setIsStarted] = useState<boolean>(false);
     const [currentSubText, setCurrentSubText] = useState<string>('');
-    const [currentSubIndex, setCurrentSubIndex] = useState<number>(0);
     const [timerId, setTimerId] = useState<number>(0);
 
     useEffect(() => {
-        const subs = getSubs();
-        if (!subs) {
-            return;
+        const movie = getMovie();
+
+        if (movie && movie.isStarted) {
+            startTimer(movie);
         }
-
-        const isStarted = localStorage.getItem('isStarted') === "1";
-        setIsStarted(isStarted);
-
-        if (!isStarted) {
-            return;
-        }
-
-        const startDate = Number.parseInt(localStorage.getItem('startDate') ?? '0');
-        if (!startDate) {
-            return;
-        }
-
-        const currentIndex = Number.parseInt(localStorage.getItem('currentIndex') ?? '-1');
-
-        showSubs(subs, currentIndex, startDate);
     }, []);
 
-    const startTimer = (): void => {
-        localStorage.setItem('isStarted', '1');
-        localStorage.setItem('startDate', new Date().getTime().toString());
-        setIsStarted(true);
+    const startTimer = (movie?: IMovie): void => {
+        if (movie) {
+            showSubs({
+                isStarted: true,
+                lastDisplayedIndex: movie.lastDisplayedIndex,
+                startTimestamp: movie.startTimestamp,
+                subtitles: movie.subtitles
+            });
+        } else {
+            movie = movie ?? getMovie();
 
-        const subs = getSubs();
-
-        if (subs) {
-            showSubs(subs, -1);
+            if (movie) {
+                showSubs({
+                    isStarted: true,
+                    lastDisplayedIndex: -1,
+                    startTimestamp: new Date().getTime(),
+                    subtitles: movie.subtitles
+                });
+            }
         }
+
+        setIsStarted(true);
     };
 
     const stopTimer = (): void => {
@@ -61,44 +63,49 @@ const MovieComponent: React.FC = () => {
         setCurrentSubText('');
     };
 
-    const getSubs = (): ISubtitles[] | undefined => {
-        const parser = new Parser();
-        const subtitles = localStorage.getItem(getSubsKey());
+    const getMovie = (): IMovie | undefined => {
+        const movie = JSON.parse(localStorage.getItem(getMovieKey()) ?? '{}');
 
-        return subtitles
-            ? parser.fromSrt(subtitles)
-            : undefined;
+        return movie.subtitles
+            ? {
+                subtitles: movie.subtitles,
+                isStarted: movie.isStarted ?? false,
+                startTimestamp: movie.startTimestamp ?? 0,
+                lastDisplayedIndex: movie.lastDisplayedIndex ?? -1
+            } : undefined;
     }
 
-    const getSubsKey = (): string => {
+    const getMovieKey = (): string => {
         return `movie:${params.id}`;
     }
 
-    const showSubs = (subtitles: ISubtitles[], index: number, startTimestamp?:number): void => {
-        if (!subtitles) {
+    const showSubs = (movie:IMovie): void => {
+        if (!movie.subtitles || !movie.isStarted || !movie.startTimestamp) {
             return;
         }
 
-        if (startTimestamp) {
-            index = subtitles.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
+        if (movie.startTimestamp) {
+            movie.lastDisplayedIndex = movie.subtitles.findIndex(x => (movie.startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
             if (timerId) {
                 window.clearTimeout(timerId);
             }
         }
 
-        if (index > -1) {
-            setCurrentSubText(subtitles[index].text);
+        if (movie.lastDisplayedIndex > -1) {
+            setCurrentSubText(movie.subtitles[movie.lastDisplayedIndex].text);
         }
 
-        if (index < subtitles.length - 1) {
-            const interval = index === -1
-                ? subtitles[0].startSeconds
-                : (subtitles[index + 1].startSeconds - subtitles[index].startSeconds);
+        localStorage.setItem(getMovieKey(), JSON.stringify(movie));
+
+        if (movie.lastDisplayedIndex < movie.subtitles.length - 1) {
+            const interval = movie.lastDisplayedIndex === -1
+                ? movie.subtitles[0].startSeconds
+                : (movie.subtitles[movie.lastDisplayedIndex + 1].startSeconds - movie.subtitles[movie.lastDisplayedIndex].startSeconds);
 
             setTimerId(window.setTimeout(() => {
-                index++;
-                localStorage.setItem('currentIndex', index.toString());
-                showSubs(subtitles, index);
+                movie.lastDisplayedIndex++;
+                localStorage.setItem('currentIndex', movie.lastDisplayedIndex.toString());
+                showSubs(movie);
             }, interval * 1000));
         } else {
             stopTimer();
@@ -110,7 +117,7 @@ const MovieComponent: React.FC = () => {
         {
             isStarted
                 ? <button onClick={stopTimer}>Stop</button>
-                : <button onClick={startTimer}>Start</button>
+                : <button onClick={() => startTimer()}>Start</button>
         }
         </div>
         <div>{currentSubText}</div>

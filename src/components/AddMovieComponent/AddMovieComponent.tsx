@@ -25,8 +25,10 @@ const AddMovieComponent: React.FC = () => {
         });
     };
 
-    const onFormSubmitted = (e: React.FormEvent<HTMLFormElement>) : void => {
-        localStorage.setItem(`movie:${data.name}`, data.content);
+    const onFormSubmitted = () : void => {
+        localStorage.setItem(`movie:${data.name}`, JSON.stringify({
+            subtitles: data.content
+        }));
     };
 
     return <form onSubmit={onFormSubmitted}>
