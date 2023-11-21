@@ -1,1 +1,27 @@
-.MovieComponent {}
+.MovieComponent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.MovieComponent .buttons {
+    flex: 0 1 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.MovieComponent .buttons button {
+    min-width: 100px;
+    border-radius: 25px;
+}
+
+.MovieComponent .text-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.MovieComponent .text-container .text {
+    font-size: 30px;
+}

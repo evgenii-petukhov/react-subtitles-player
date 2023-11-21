@@ -15,6 +15,7 @@ interface IMovie {
     subtitles: ISubtitle[];
     isStarted: boolean;
     startTimestamp: number;
+    rewindMs: number;
 }
 
 const MovieComponent: React.FC = () => {
@@ -35,16 +36,16 @@ const MovieComponent: React.FC = () => {
         var index = -1;
 
         if (movie) {
-            const startTimestamp = movie.startTimestamp;
-            index = movie.subtitles.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
+            index = getIndex(movie);
         } else {
             movie = getMovie();
 
             if (!movie) {
-                return; 
+                return;
             }
 
             movie.startTimestamp = new Date().getTime();
+            movie.rewindMs = 0;
         }
 
         movie.isStarted = true;
@@ -59,6 +60,7 @@ const MovieComponent: React.FC = () => {
             return;
         }
         movie.isStarted = false;
+        movie.rewindMs = 0;
         localStorage.setItem(getMovieKey(), JSON.stringify(movie));
         setIsStarted(false);
         window.clearTimeout(timerId);
@@ -73,6 +75,7 @@ const MovieComponent: React.FC = () => {
                 subtitles: movie.subtitles,
                 isStarted: movie.isStarted ?? false,
                 startTimestamp: movie.startTimestamp ?? 0,
+                rewindMs: movie.rewindMs ?? 0
             } : undefined;
     }
 
@@ -80,7 +83,7 @@ const MovieComponent: React.FC = () => {
         return `movie:${params.id}`;
     }
 
-    const showSubs = (movie:IMovie, index: number): void => {
+    const showSubs = (movie: IMovie, index: number): void => {
         if (!movie.subtitles || !movie.isStarted || !movie.startTimestamp) {
             return;
         }
@@ -103,15 +106,50 @@ const MovieComponent: React.FC = () => {
         }
     }
 
-    return <div className="MovieComponent">
-        <div>
-        {
-            isStarted
-                ? <button onClick={() => stopTimer()}>Stop</button>
-                : <button onClick={() => startTimer()}>Start</button>
+    const rewind = (seconds: number) => {
+        window.clearTimeout(timerId);
+
+        const movie = getMovie();
+
+        if (!movie) {
+            return;
         }
+
+        movie.rewindMs = movie.rewindMs + seconds * 1000;
+
+        localStorage.setItem(getMovieKey(), JSON.stringify(movie));
+
+        showSubs(movie, getIndex(movie));
+    };
+
+    const getIndex = (movie: IMovie) => {
+        const startTimestamp = movie.startTimestamp + movie.rewindMs;
+        return movie.subtitles.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
+    };
+
+    return <div className="MovieComponent">
+        <div className='buttons'>
+        {
+                isStarted && <>
+                    <button onClick={() => rewind(30)}>-30s</button>
+                    <button onClick={() => rewind(5)}>-5s</button>
+                </>  
+            }
+            {
+                isStarted
+                    ? <button onClick={() => stopTimer()}>Stop</button>
+                    : <button onClick={() => startTimer()}>Start</button>
+            }
+            {
+                isStarted && <>
+                    <button onClick={() => rewind(-5)}>+5s</button>
+                    <button onClick={() => rewind(-30)}>+30s</button>
+                </>  
+            }
         </div>
-        <div>{currentSubText}</div>
+        <div className='text-container'>
+            <div className='text'>{currentSubText}</div>
+        </div>
     </div>
 };
 
