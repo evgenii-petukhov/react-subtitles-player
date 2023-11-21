@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Parser from 'srt-parser-2';
+import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
+import './AddMovieComponent.css';
 
 interface IState {
     name: string;
@@ -7,6 +9,8 @@ interface IState {
 }
 
 const AddMovieComponent: React.FC = () => {
+    const formRef = useRef<HTMLFormElement>(null);
+
     const [data, setData] = useState<IState>({
         name: '',
         content: ''
@@ -36,20 +40,26 @@ const AddMovieComponent: React.FC = () => {
         }
     };
 
-    return <form onSubmit={onFormSubmitted}>
-        <div>
-            Name: <input type='text'
-                value={data?.name}
-                onChange={onNameChanged} />
-        </div>
-        <div>
-            <textarea value={data?.content}
-                onChange={onContentChanged} />
-        </div>
-        <div>
-            <input type='submit' value='Submit' disabled={!data.name || !data.content} />
-        </div>
-    </form>;
+    const onSubmitClicked = (): void => {
+        formRef.current?.submit();
+    };
+
+    return <div className='AddMovieComponent'>
+        <form ref={formRef} onSubmit={onFormSubmitted}>
+            <div className='form-row'>
+                Name: <input type='text'
+                    value={data?.name}
+                    onChange={onNameChanged} />
+            </div>
+            <div className='form-row'>
+                Subtitles: <textarea value={data?.content}
+                    onChange={onContentChanged} rows={5} />
+            </div>
+        </form>
+        <BackButtonComponent isToolbarShown={true}>
+            <button disabled={!data.name || !data.content} onClick={onSubmitClicked}>Submit</button>
+        </BackButtonComponent>
+    </div>;
 };
 
 export default AddMovieComponent;

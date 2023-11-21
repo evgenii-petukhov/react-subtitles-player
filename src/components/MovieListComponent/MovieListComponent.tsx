@@ -8,7 +8,7 @@ const MovieListComponent: React.FC = () => {
     useEffect(() => {
         const movieList = [];
 
-        for (var key in localStorage){
+        for (var key in localStorage) {
             if (localStorage.getItem(key) && key.startsWith('movie:')) {
                 movieList.push(key.substring(6));
             }
@@ -18,12 +18,20 @@ const MovieListComponent: React.FC = () => {
     }, []);
 
     return <div className="MovieListComponent">
-        <Link to={`/add`}>Add a new movie</Link>
-        {
-            movies.map(movie => <div key={movie}>
-                <Link to={`/movie/${movie}`}>{movie}</Link>
-            </div>)
-        }
+        <div className='toolbar'>
+            <Link to={`/add`}>
+                <button>Add new</button>
+            </Link>
+        </div>
+        <div className='movie-list'>
+            <ol>
+            {
+                movies.map(movie => <li key={movie}>
+                    <Link to={`/movie/${movie}`}>{movie}</Link>
+                </li>)
+            }
+            </ol>
+        </div>
     </div>
 };
 

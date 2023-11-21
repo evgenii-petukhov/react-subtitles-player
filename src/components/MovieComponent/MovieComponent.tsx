@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './MovieComponent.css';
 import { useParams } from 'react-router-dom';
+import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
 
 interface ISubtitle {
     id: string;
@@ -144,7 +145,7 @@ const MovieComponent: React.FC = () => {
     };
 
     return <div className="MovieComponent" onClick={showToolbar}>
-        <div className={`buttons ${!isToolbarShown && 'hidden'}`}>
+        <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
         {
                 isStarted && <>
                     <button onClick={() => rewind(30)}>-30s</button>
@@ -166,6 +167,7 @@ const MovieComponent: React.FC = () => {
         <div className='text-container'>
             <div className='text'>{currentSubText}</div>
         </div>
+        <BackButtonComponent isToolbarShown={isToolbarShown} />
     </div>
 };
 

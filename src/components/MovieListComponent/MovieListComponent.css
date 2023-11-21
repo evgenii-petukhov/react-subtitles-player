@@ -1,1 +1,9 @@
-.MovieListComponent {}
+.MovieListComponent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.movie-list {
+    flex: 1;
+}

@@ -4,22 +4,6 @@
     flex-direction: column;
 }
 
-.MovieComponent .buttons {
-    flex: 0 1 50px;
-    display: flex;
-    justify-content: center;
-    transition: transform 1s;
-}
-
-.MovieComponent .buttons.hidden {
-    transform: translateY(-50px);
-}
-
-.MovieComponent .buttons button {
-    min-width: 100px;
-    border-radius: 25px;
-}
-
 .MovieComponent .text-container {
     flex: 1;
     display: flex;

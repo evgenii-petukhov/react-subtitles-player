@@ -19,3 +19,47 @@ body {
     display: flex;
     flex: 1;
 }
+
+a, a:visited {
+    color: #fff;
+}
+
+.toolbar {
+    flex: 0 1 50px;
+    display: flex;
+    justify-content: center;
+    transition: transform 1s;
+}
+
+.toolbar button {
+    min-width: 100px;
+    border-radius: 25px;
+}
+
+.toolbar a {
+    display: flex;
+}
+
+.toolbar.hidden {
+    transform: translateY(-50px);
+}
+
+.bottom-toolbar {
+    flex: 0 1 50px;
+    display: flex;
+    justify-content: center;
+    transition: transform 1s;
+}
+
+.bottom-toolbar button {
+    min-width: 100px;
+    border-radius: 25px;
+}
+
+.bottom-toolbar a {
+    display: flex;
+}
+
+.bottom-toolbar.hidden {
+    transform: translateY(50px);
+}
