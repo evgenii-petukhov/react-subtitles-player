@@ -15,17 +15,31 @@ interface ISubtitles {
 const MovieComponent: React.FC = () => {
     const params = useParams();
     const [isStarted, setIsStarted] = useState<boolean>(false);
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [subs, setSubs] = useState<ISubtitles[] | null>(null);
-    const [currentSubIndex, setCurrentSubIndex] = useState<number>(-1);
-    const [currentSubText, setCurrentSubText] = useState<string | null>(null);
+    const [currentSubText, setCurrentSubText] = useState<string>('');
+    const [currentSubIndex, setCurrentSubIndex] = useState<number>(0);
+    const [timerId, setTimerId] = useState<number>(0);
 
     useEffect(() => {
-        setIsStarted(localStorage.getItem('isStarted') === "1");
-        const startDate = localStorage.getItem('startDate');
-        if (startDate) {
-            setStartDate(new Date(Number.parseInt(startDate)));
+        const subs = getSubs();
+        if (!subs) {
+            return;
         }
+
+        const isStarted = localStorage.getItem('isStarted') === "1";
+        setIsStarted(isStarted);
+
+        if (!isStarted) {
+            return;
+        }
+
+        const startDate = Number.parseInt(localStorage.getItem('startDate') ?? '0');
+        if (!startDate) {
+            return;
+        }
+
+        const currentIndex = Number.parseInt(localStorage.getItem('currentIndex') ?? '-1');
+
+        showSubs(subs, currentIndex, startDate);
     }, []);
 
     const startTimer = (): void => {
@@ -33,31 +47,43 @@ const MovieComponent: React.FC = () => {
         localStorage.setItem('startDate', new Date().getTime().toString());
         setIsStarted(true);
 
-        const subtitles = getSubtitles(`movie:${params.id}`);
+        const subs = getSubs();
 
-        if (subtitles) {
-            setSubs(subtitles);
-            showNextSub(subtitles, -1);
+        if (subs) {
+            showSubs(subs, -1);
         }
     };
 
     const stopTimer = (): void => {
         localStorage.setItem('isStarted', '0');
         setIsStarted(false);
+        window.clearTimeout(timerId);
+        setCurrentSubText('');
     };
 
-    function getSubtitles(key: string): ISubtitles[] | null {
+    const getSubs = (): ISubtitles[] | undefined => {
         const parser = new Parser();
-        const subtitles = localStorage.getItem(key);
+        const subtitles = localStorage.getItem(getSubsKey());
 
         return subtitles
             ? parser.fromSrt(subtitles)
-            : null;
+            : undefined;
     }
 
-    function showNextSub(subtitles: ISubtitles[], index: number) {
+    const getSubsKey = (): string => {
+        return `movie:${params.id}`;
+    }
+
+    const showSubs = (subtitles: ISubtitles[], index: number, startTimestamp?:number): void => {
         if (!subtitles) {
             return;
+        }
+
+        if (startTimestamp) {
+            index = subtitles.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
+            if (timerId) {
+                window.clearTimeout(timerId);
+            }
         }
 
         if (index > -1) {
@@ -69,9 +95,13 @@ const MovieComponent: React.FC = () => {
                 ? subtitles[0].startSeconds
                 : (subtitles[index + 1].startSeconds - subtitles[index].startSeconds);
 
-            setTimeout(() => {
-                showNextSub(subtitles, index + 1);
-            }, interval * 1000);
+            setTimerId(window.setTimeout(() => {
+                index++;
+                localStorage.setItem('currentIndex', index.toString());
+                showSubs(subtitles, index);
+            }, interval * 1000));
+        } else {
+            stopTimer();
         }
     }
 
