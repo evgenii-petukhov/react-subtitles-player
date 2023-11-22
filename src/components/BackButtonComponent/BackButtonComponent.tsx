@@ -1,5 +1,4 @@
 import React, { Children, PropsWithChildren } from 'react';
-import './BackButtonComponent.css';
 import { useNavigate } from 'react-router';
 
 interface BackButtonComponentProps extends PropsWithChildren {

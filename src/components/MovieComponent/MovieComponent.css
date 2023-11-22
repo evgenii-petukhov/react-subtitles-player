@@ -14,3 +14,9 @@
 .MovieComponent .text-container .text {
     font-size: 30px;
 }
+
+.MovieComponent .fullscreen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}

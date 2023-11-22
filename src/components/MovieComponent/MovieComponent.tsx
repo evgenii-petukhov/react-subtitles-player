@@ -147,7 +147,11 @@ const MovieComponent: React.FC = () => {
     };
 
     const enterFullscreen = (): void => {
-        fullscreen.enter();
+        if (fullscreen.active) {
+            fullscreen.exit();
+        } else {
+            fullscreen.enter();
+        }
     };
 
     return <div className="MovieComponent" onClick={showToolbar}>
@@ -155,8 +159,8 @@ const MovieComponent: React.FC = () => {
             <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
             {
                     isStarted && <>
-                        <button onClick={() => rewind(30)}>-30s</button>
-                        <button onClick={() => rewind(5)}>-5s</button>
+                        <button className='round' onClick={() => rewind(30)}>&#8722;30s</button>
+                        <button className='round' onClick={() => rewind(5)}>&#8722;5s</button>
                     </>  
                 }
                 {
@@ -164,18 +168,19 @@ const MovieComponent: React.FC = () => {
                         ? <button onClick={() => stopTimer()}>Stop</button>
                         : <button onClick={() => startTimer()}>Start</button>
                 }
-                {!fullscreen.active && <button onClick={() => enterFullscreen()}>Fullscreen</button>}
                 {
                     isStarted && <>
-                        <button onClick={() => rewind(-5)}>+5s</button>
-                        <button onClick={() => rewind(-30)}>+30s</button>
-                    </>  
+                        <button className='round' onClick={() => rewind(-5)}>+5s</button>
+                        <button className='round' onClick={() => rewind(-30)}>+30s</button>
+                    </>
                 }
             </div>
             <div className='text-container'>
                 <div className='text'>{currentSubText}</div>
             </div>
-            <BackButtonComponent isToolbarShown={isToolbarShown} />
+            <BackButtonComponent isToolbarShown={isToolbarShown}>
+                <button onClick={() => enterFullscreen()}>Fullscreen</button>
+            </BackButtonComponent>
         </FullScreen>
     </div>
 };

@@ -29,10 +29,18 @@ a, a:visited {
     display: flex;
     justify-content: center;
     transition: opacity 1s;
+    gap: 20px;
 }
 
 .toolbar button {
     min-width: 100px;
+    border-radius: 25px;
+    border: none;
+}
+
+.toolbar button.round {
+    width: 50px;
+    min-width: auto;
     border-radius: 25px;
     border: none;
 }
@@ -50,6 +58,7 @@ a, a:visited {
     display: flex;
     justify-content: center;
     transition: opacity 1s;
+    gap: 20px;
 }
 
 .bottom-toolbar button {
@@ -64,10 +73,4 @@ a, a:visited {
 
 .bottom-toolbar.hidden {
     opacity: 0;
-}
-
-.fullscreen {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
 }

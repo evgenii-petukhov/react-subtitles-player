@@ -4,6 +4,6 @@
     flex-direction: column;
 }
 
-.movie-list {
+.MovieListComponent .movie-list {
     flex: 1;
 }
