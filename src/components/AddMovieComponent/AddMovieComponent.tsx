@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Parser from 'srt-parser-2';
 import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
 import './AddMovieComponent.css';
+import { getSubtitlesKey } from '../../helpers/localStorageItemNameHelper';
 
 interface IState {
     name: string;
@@ -38,7 +39,7 @@ const AddMovieComponent: React.FC = () => {
             localStorage.setItem(`movie:info:${uuid}`, JSON.stringify({
                 name: userInput.name
             }));
-            localStorage.setItem(`movie:subtitles:${uuid}`, JSON.stringify(subtitles));
+            localStorage.setItem(getSubtitlesKey(uuid), JSON.stringify(subtitles));
         }
     };
 

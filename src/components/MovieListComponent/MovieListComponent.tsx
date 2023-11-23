@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './MovieListComponent.css';
 import { Link } from 'react-router-dom';
+import { isMovieInfoItem, getMovieId } from '../../helpers/localStorageItemNameHelper';
 
 interface IMovie {
     id: string;
@@ -9,13 +10,13 @@ interface IMovie {
 
 const MovieListComponent: React.FC = () => {
     const [movies, setMovies] = useState<IMovie[]>([]);
-    const infoPrefix = 'movie:info:';
+    
 
     useEffect(() => {
         const movieList = [];
 
         for (var key in localStorage) {
-            if (!key.startsWith(infoPrefix)) {
+            if (!isMovieInfoItem(key)) {
                 continue;
             }
 
@@ -25,7 +26,7 @@ const MovieListComponent: React.FC = () => {
             }
             
             movieList.push({
-                id: key.substring(infoPrefix.length),
+                id: getMovieId(key),
                 name: JSON.parse(info).name
             });
         }

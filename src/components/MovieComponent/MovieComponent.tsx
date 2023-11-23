@@ -3,6 +3,7 @@ import './MovieComponent.css';
 import { useParams } from 'react-router-dom';
 import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { getSubtitlesKey } from '../../helpers/localStorageItemNameHelper';
 
 interface ISubtitle {
     id: string;
@@ -29,12 +30,16 @@ const MovieComponent: React.FC = () => {
     const [isToolbarShown, setIsToolbarShown] = useState<boolean>(true);
     const subtitlesRef = useRef<ISubtitle[]>([]);
 
-    const subtitlesPrefix = 'movie:subtitles:';
     const playInfoPrefix = 'movie:playinfo:';
 
     useEffect(() => {
+        if (!params.id) {
+            return;
+        }
+
         const playInfo = getPlayInfo();
-        subtitlesRef.current = JSON.parse(localStorage.getItem(subtitlesPrefix + params.id) ?? '[]') as ISubtitle[];
+
+        subtitlesRef.current = JSON.parse(localStorage.getItem(getSubtitlesKey(params.id)) ?? '[]') as ISubtitle[];
 
         if (subtitlesRef.current && playInfo && playInfo.isStarted) {
             startTimer(playInfo);
