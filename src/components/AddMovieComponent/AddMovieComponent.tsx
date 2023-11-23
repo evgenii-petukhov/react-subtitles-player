@@ -19,14 +19,14 @@ const AddMovieComponent: React.FC = () => {
 
     const onNameChanged = (e: React.ChangeEvent<HTMLInputElement>) : void => {
         setUserInput({
-            ... userInput,
+            ...userInput,
             name: e.target.value
         });
     };
 
     const onContentChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) : void => {
         setUserInput({
-            ... userInput,
+            ...userInput,
             content: e.target.value
         });
     };
