@@ -23,7 +23,6 @@ interface IPlayInfo {
 const MovieComponent: React.FC = () => {
     const params = useParams();
     const fullscreen = useFullScreenHandle();
-    const [isStarted, setIsStarted] = useState<boolean>(false);
     const [currentSubText, setCurrentSubText] = useState<string>('');
     const [subtitleChangeTimerId, setSubtitleChangeTimerId] = useState<number>(0);
     const [hideToolbarTimerId, setHideToolbarTimerId] = useState<number>(0);
@@ -60,12 +59,9 @@ const MovieComponent: React.FC = () => {
     }, []);
 
     const startTimer = (): void => {
-        var index = -1;
+        const index = playInfoRef.current.isStarted ? getIndex(playInfoRef.current) : -1;
 
-        if (playInfoRef.current.isStarted) {
-            index = getIndex(playInfoRef.current);
-            playInfoRef.current.isStarted = true;
-        } else {
+        if (!playInfoRef.current.isStarted) {
             playInfoRef.current = {
                 startTimestamp: new Date().getTime(),
                 rewindMs: 0,
@@ -74,7 +70,6 @@ const MovieComponent: React.FC = () => {
         }
 
         localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfoRef.current));
-        setIsStarted(true);
         showSubs(index);
     };
 
@@ -82,7 +77,6 @@ const MovieComponent: React.FC = () => {
         playInfoRef.current.isStarted = false;
         playInfoRef.current.rewindMs = 0;
         localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfo));
-        setIsStarted(false);
         window.clearTimeout(subtitleChangeTimerId);
         setCurrentSubText('');
     };
@@ -126,11 +120,8 @@ const MovieComponent: React.FC = () => {
 
     const rewind = (seconds: number): void => {
         window.clearTimeout(subtitleChangeTimerId);
-
-        playInfoRef.current.rewindMs = playInfoRef.current.rewindMs + seconds * 1000;
-
+        playInfoRef.current.rewindMs += seconds * 1000;
         localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfoRef.current));
-
         showSubs(getIndex(playInfoRef.current));
     };
 
@@ -163,18 +154,18 @@ const MovieComponent: React.FC = () => {
         <FullScreen handle={fullscreen}>
             <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
                 {
-                    isStarted && <>
+                    playInfoRef.current.isStarted && <>
                         <button className='round' onClick={() => rewind(30)}>&#8722;30s</button>
                         <button className='round' onClick={() => rewind(5)}>&#8722;5s</button>
                     </>  
                 }
                 {
-                    isStarted
+                    playInfoRef.current.isStarted
                         ? <button onClick={() => stopTimer()}>Stop</button>
                         : <button onClick={() => startTimer()}>Start</button>
                 }
                 {
-                    isStarted && <>
+                    playInfoRef.current.isStarted && <>
                         <button className='round' onClick={() => rewind(-5)}>+5s</button>
                         <button className='round' onClick={() => rewind(-30)}>+30s</button>
                     </>
