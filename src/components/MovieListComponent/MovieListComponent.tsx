@@ -2,16 +2,32 @@ import React, { useEffect, useState } from 'react';
 import './MovieListComponent.css';
 import { Link } from 'react-router-dom';
 
+interface IMovie {
+    id: string;
+    name: string;
+}
+
 const MovieListComponent: React.FC = () => {
-    const [movies, setMovies] = useState<string[]>([]);
+    const [movies, setMovies] = useState<IMovie[]>([]);
+    const infoPrefix = 'movie:info:';
 
     useEffect(() => {
         const movieList = [];
 
         for (var key in localStorage) {
-            if (localStorage.getItem(key) && key.startsWith('movie:')) {
-                movieList.push(key.substring(6));
+            if (!key.startsWith(infoPrefix)) {
+                continue;
             }
+
+            const info = localStorage.getItem(key);
+            if (!info) {
+                continue;
+            }
+            
+            movieList.push({
+                id: key.substring(infoPrefix.length),
+                name: JSON.parse(info).name
+            });
         }
 
         setMovies(movieList);
@@ -26,8 +42,8 @@ const MovieListComponent: React.FC = () => {
         <div className='movie-list'>
             <ol>
             {
-                movies.map(movie => <li key={movie}>
-                    <Link to={`/movie/${movie}`}>{movie}</Link>
+                movies.map(movie => <li key={movie.id}>
+                    <Link to={`/movie/${movie.id}`}>{movie.name}</Link>
                 </li>)
             }
             </ol>

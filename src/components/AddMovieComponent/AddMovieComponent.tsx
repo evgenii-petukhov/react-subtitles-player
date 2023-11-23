@@ -11,32 +11,34 @@ interface IState {
 const AddMovieComponent: React.FC = () => {
     let formRef: HTMLFormElement | null = null;
 
-    const [data, setData] = useState<IState>({
+    const [userInput, setUserInput] = useState<IState>({
         name: '',
         content: ''
     });
 
     const onNameChanged = (e: React.ChangeEvent<HTMLInputElement>) : void => {
-        setData({
-            ... data,
+        setUserInput({
+            ... userInput,
             name: e.target.value
         });
     };
 
     const onContentChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) : void => {
-        setData({
-            ... data,
+        setUserInput({
+            ... userInput,
             content: e.target.value
         });
     };
 
     const onFormSubmitted = () : void => {
         const parser = new Parser();
-        const subtitles = parser.fromSrt(data.content);
+        const subtitles = parser.fromSrt(userInput.content);
         if (subtitles) {
-            localStorage.setItem(`movie:${data.name}`, JSON.stringify({
-                subtitles: subtitles
+            const uuid = crypto.randomUUID();
+            localStorage.setItem(`movie:info:${uuid}`, JSON.stringify({
+                name: userInput.name
             }));
+            localStorage.setItem(`movie:subtitles:${uuid}`, JSON.stringify(subtitles));
         }
     };
 
@@ -52,16 +54,16 @@ const AddMovieComponent: React.FC = () => {
         <form ref={getFormRefWraper} onSubmit={onFormSubmitted}>
             <div className='form-row'>
                 Name: <input type='text'
-                    value={data?.name}
+                    value={userInput?.name}
                     onChange={onNameChanged} />
             </div>
             <div className='form-row'>
-                Subtitles: <textarea value={data?.content}
+                Subtitles: <textarea value={userInput?.content}
                     onChange={onContentChanged} rows={5} />
             </div>
         </form>
         <BackButtonComponent isToolbarShown={true}>
-            <button disabled={!data.name || !data.content} onClick={onSubmitClicked}>Submit</button>
+            <button disabled={!userInput.name || !userInput.content} onClick={onSubmitClicked}>Submit</button>
         </BackButtonComponent>
     </div>;
 };
