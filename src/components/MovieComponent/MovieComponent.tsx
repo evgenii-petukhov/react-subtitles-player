@@ -28,6 +28,11 @@ const MovieComponent: React.FC = () => {
     const [subtitleChangeTimerId, setSubtitleChangeTimerId] = useState<number>(0);
     const [hideToolbarTimerId, setHideToolbarTimerId] = useState<number>(0);
     const [isToolbarShown, setIsToolbarShown] = useState<boolean>(true);
+    const playInfoRef = useRef<IPlayInfo>({
+        isStarted: false,
+        startTimestamp: 0,
+        rewindMs: 0
+    });
     const subtitlesRef = useRef<ISubtitle[]>([]);
 
     const playInfoPrefix = 'movie:playinfo:';
@@ -39,44 +44,43 @@ const MovieComponent: React.FC = () => {
 
         const playInfo = getPlayInfo();
 
+        if (!playInfo) {
+            return;
+        }
+
+        playInfoRef.current = playInfo;
+
         subtitlesRef.current = JSON.parse(localStorage.getItem(getSubtitlesKey(params.id)) ?? '[]') as ISubtitle[];
 
         if (subtitlesRef.current && playInfo && playInfo.isStarted) {
-            startTimer(playInfo);
+            startTimer();
         }
 
         hideToolbar();
     }, []);
 
-    const startTimer = (playInfo?: IPlayInfo): void => {
+    const startTimer = (): void => {
         var index = -1;
 
-        if (playInfo) {
-            index = getIndex(playInfo);
+        if (playInfoRef.current.isStarted) {
+            index = getIndex(playInfoRef.current);
+            playInfoRef.current.isStarted = true;
         } else {
-            playInfo = getPlayInfo();
-
-            if (!playInfo) {
-                return;
+            playInfoRef.current = {
+                startTimestamp: new Date().getTime(),
+                rewindMs: 0,
+                isStarted: true
             }
-
-            playInfo.startTimestamp = new Date().getTime();
-            playInfo.rewindMs = 0;
         }
 
-        playInfo.isStarted = true;
-        localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfo));
+        localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfoRef.current));
         setIsStarted(true);
-        showSubs(playInfo, index);
+        showSubs(index);
     };
 
     const stopTimer = (playInfo?: IPlayInfo): void => {
-        playInfo = playInfo ?? getPlayInfo();
-        if (!playInfo) {
-            return;
-        }
-        playInfo.isStarted = false;
-        playInfo.rewindMs = 0;
+        playInfoRef.current.isStarted = false;
+        playInfoRef.current.rewindMs = 0;
         localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfo));
         setIsStarted(false);
         window.clearTimeout(subtitleChangeTimerId);
@@ -97,8 +101,8 @@ const MovieComponent: React.FC = () => {
         return playInfoPrefix + params.id;
     }
 
-    const showSubs = (playInfo: IPlayInfo, index: number): void => {
-        if (!playInfo.isStarted || !playInfo.startTimestamp) {
+    const showSubs = (index: number): void => {
+        if (!playInfoRef.current.isStarted || !playInfoRef.current.startTimestamp) {
             return;
         }
 
@@ -113,27 +117,21 @@ const MovieComponent: React.FC = () => {
 
             setSubtitleChangeTimerId(window.setTimeout(() => {
                 index++;
-                showSubs(playInfo, index);
+                showSubs(index);
             }, interval * 1000));
         } else {
-            stopTimer(playInfo);
+            stopTimer(playInfoRef.current);
         }
     }
 
     const rewind = (seconds: number): void => {
         window.clearTimeout(subtitleChangeTimerId);
 
-        const playInfo = getPlayInfo();
+        playInfoRef.current.rewindMs = playInfoRef.current.rewindMs + seconds * 1000;
 
-        if (!playInfo) {
-            return;
-        }
+        localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfoRef.current));
 
-        playInfo.rewindMs = playInfo.rewindMs + seconds * 1000;
-
-        localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfo));
-
-        showSubs(playInfo, getIndex(playInfo));
+        showSubs(getIndex(playInfoRef.current));
     };
 
     const getIndex = (playInfo: IPlayInfo): number => {
