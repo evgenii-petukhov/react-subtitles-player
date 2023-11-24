@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './MovieListComponent.scss';
 import { Link } from 'react-router-dom';
 import { isMovieInfoItem, getMovieId } from '../../helpers/localStorageItemNameHelper';
+import FooterComponent from '../FooterComponent/FooterComponent';
 
 interface IMovie {
     id: string;
@@ -10,7 +11,7 @@ interface IMovie {
 
 const MovieListComponent: React.FC = () => {
     const [movies, setMovies] = useState<IMovie[]>([]);
-    
+
 
     useEffect(() => {
         const movieList = [];
@@ -24,7 +25,7 @@ const MovieListComponent: React.FC = () => {
             if (!info) {
                 continue;
             }
-            
+
             movieList.push({
                 id: getMovieId(key),
                 name: JSON.parse(info).name
@@ -35,17 +36,19 @@ const MovieListComponent: React.FC = () => {
     }, []);
 
     return <div className="MovieListComponent">
-        <div className='movie-list'>
-            <div className="list-group">
-                <Link to={`/add`}
-                    className='list-group-item list-group-item-action active'>Add subtitles as text</Link>
-                {
-                    movies.map(movie => <Link key={movie.id}
-                        to={`/movie/${movie.id}`}
-                        className="list-group-item list-group-item-action">{movie.name}</Link>)
-                }
-            </div>
+        <div className="list-group">
+            <div className="list-group-item list-group-item-action active" aria-current="true">Select a movie</div>
+
+            {
+                movies.map(movie => <Link key={movie.id}
+                    to={`/movie/${movie.id}`}
+                    className="list-group-item list-group-item-action">{movie.name}</Link>)
+            }
         </div>
+        <FooterComponent isToolbarShown={true} isExitButtonShown={false}>
+            <Link to={`/add`}
+                className='btn btn-dark'>Add subtitles as text</Link>
+        </FooterComponent>
     </div>
 };
 

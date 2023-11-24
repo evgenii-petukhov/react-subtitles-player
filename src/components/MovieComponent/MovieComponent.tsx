@@ -180,7 +180,7 @@ const MovieComponent: React.FC = () => {
             <div className='text-container'>
                 <div className='text'>{currentSubText}</div>
             </div>
-            <FooterComponent isToolbarShown={isToolbarShown}>
+            <FooterComponent isToolbarShown={isToolbarShown} isExitButtonShown={true}>
                 <button className='btn btn-dark'
                     onClick={() => enterFullscreen()}>Fullscreen</button>
             </FooterComponent>
