@@ -62,15 +62,21 @@ const AddMovieComponent: React.FC = () => {
 
     return <div className='AddMovieComponent'>
         <div className='form-container'>
-            <div className="col-md-4 mb-3">
-                <label className="form-label">Movie name</label>
-                <input type="text" className="form-control" value={userInput?.name}
-                    onChange={onNameChanged}/>
-            </div>
-            <div className="col-md-4 mb-3">
-                <label className="form-label">Paste subtitles as text</label>
-                <textarea className="form-control" value={userInput?.content}
-                    onChange={onContentChanged} rows={5}></textarea>
+            <div className='container'>
+                <div className='row justify-content-lg-center'>
+                    <div className="col-lg-4 mb-3">
+                    <label className="form-label">Movie name</label>
+                    <input type="text" className="form-control" value={userInput?.name}
+                        onChange={onNameChanged}/>
+                    </div>
+                </div>
+                <div className='row justify-content-lg-center'>
+                    <div className="col-lg-4 mb-3">
+                        <label className="form-label">Paste subtitles as text</label>
+                        <textarea className="form-control" value={userInput?.content}
+                            onChange={onContentChanged} rows={5}></textarea>
+                    </div>
+                </div>
             </div>
         </div>
         <FooterComponent isToolbarShown={true} isExitButtonShown={!isMovieListEmpty}>
