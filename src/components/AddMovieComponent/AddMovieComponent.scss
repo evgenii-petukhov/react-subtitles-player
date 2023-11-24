@@ -1,0 +1,19 @@
+.AddMovieComponent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: 400px;
+
+        .form-row {
+            margin-bottom: 20px;
+            flex: 0 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

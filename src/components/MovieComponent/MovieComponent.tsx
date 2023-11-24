@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './MovieComponent.css';
+import './MovieComponent.scss';
 import { useParams } from 'react-router-dom';
 import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";

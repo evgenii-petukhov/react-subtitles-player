@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Parser from 'srt-parser-2';
 import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
-import './AddMovieComponent.css';
+import './AddMovieComponent.scss';
 import { getSubtitlesKey } from '../../helpers/localStorageItemNameHelper';
 
 interface IState {

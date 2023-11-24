@@ -2,8 +2,8 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-}
 
-.MovieListComponent .movie-list {
-    flex: 1;
+    .movie-list {
+        flex: 1;
+    }
 }

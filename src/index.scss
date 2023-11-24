@@ -10,8 +10,6 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #000;
-    color: #fff;
     display: flex;
 }
 
@@ -21,7 +19,7 @@ body {
 }
 
 a, a:visited {
-    color: #fff;
+    color: #000;
 }
 
 .toolbar {
@@ -30,27 +28,27 @@ a, a:visited {
     justify-content: center;
     transition: opacity 1s;
     gap: 20px;
-}
 
-.toolbar button {
-    min-width: 100px;
-    border-radius: 25px;
-    border: none;
-}
+    button {
+        min-width: 100px;
+        border-radius: 25px;
+        border: none;
 
-.toolbar button.round {
-    width: 50px;
-    min-width: auto;
-    border-radius: 25px;
-    border: none;
-}
+        &.round {
+            width: 50px;
+            min-width: auto;
+            border-radius: 25px;
+            border: none;
+        }
+    }
 
-.toolbar a {
-    display: flex;
-}
+    a {
+        display: flex;
+    }
 
-.toolbar.hidden {
-    opacity: 0;
+    &.hidden {
+        opacity: 0;
+    }
 }
 
 .bottom-toolbar {
@@ -59,18 +57,18 @@ a, a:visited {
     justify-content: center;
     transition: opacity 1s;
     gap: 20px;
-}
 
-.bottom-toolbar button {
-    min-width: 100px;
-    border-radius: 25px;
-    border: none;
-}
+    button {
+        min-width: 100px;
+        border-radius: 25px;
+        border: none;
+    }
 
-.bottom-toolbar a {
-    display: flex;
-}
+    a {
+        display: flex;
+    }
 
-.bottom-toolbar.hidden {
-    opacity: 0;
+    &.hidden {
+        opacity: 0;
+    }
 }

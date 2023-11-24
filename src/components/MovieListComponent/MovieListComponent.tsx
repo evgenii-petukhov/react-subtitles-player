@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './MovieListComponent.css';
+import './MovieListComponent.scss';
 import { Link } from 'react-router-dom';
 import { isMovieInfoItem, getMovieId } from '../../helpers/localStorageItemNameHelper';
 
