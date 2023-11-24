@@ -35,19 +35,16 @@ const MovieListComponent: React.FC = () => {
     }, []);
 
     return <div className="MovieListComponent">
-        <div className='toolbar'>
-            <Link to={`/add`}>
-                <button className='btn btn-dark'>Add subtitles as text</button>
-            </Link>
-        </div>
         <div className='movie-list'>
-            <ol>
-            {
-                movies.map(movie => <li key={movie.id}>
-                    <Link to={`/movie/${movie.id}`}>{movie.name}</Link>
-                </li>)
-            }
-            </ol>
+            <div className="list-group">
+                <Link to={`/add`}
+                    className='list-group-item list-group-item-action active'>Add subtitles as text</Link>
+                {
+                    movies.map(movie => <Link key={movie.id}
+                        to={`/movie/${movie.id}`}
+                        className="list-group-item list-group-item-action">{movie.name}</Link>)
+                }
+            </div>
         </div>
     </div>
 };
