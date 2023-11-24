@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './MovieComponent.scss';
 import { useParams } from 'react-router-dom';
-import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
+import FooterComponent from '../FooterComponent/FooterComponent';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { getSubtitlesKey } from '../../helpers/localStorageItemNameHelper';
 
@@ -174,9 +174,9 @@ const MovieComponent: React.FC = () => {
             <div className='text-container'>
                 <div className='text'>{currentSubText}</div>
             </div>
-            <BackButtonComponent isToolbarShown={isToolbarShown}>
+            <FooterComponent isToolbarShown={isToolbarShown}>
                 <button onClick={() => enterFullscreen()}>Fullscreen</button>
-            </BackButtonComponent>
+            </FooterComponent>
         </FullScreen>
     </div>
 };

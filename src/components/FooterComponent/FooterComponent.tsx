@@ -1,11 +1,11 @@
-import React, { Children, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router';
 
-interface BackButtonComponentProps extends PropsWithChildren {
+interface FooterComponentProps extends PropsWithChildren {
     isToolbarShown: boolean;
 }
 
-const BackButtonComponent: React.FC<BackButtonComponentProps> = (props) => {
+const FooterComponent: React.FC<FooterComponentProps> = (props) => {
     const navigate = useNavigate();
     
     const navigateBack = (): void => {
@@ -18,4 +18,4 @@ const BackButtonComponent: React.FC<BackButtonComponentProps> = (props) => {
     </div>
 };
 
-export default BackButtonComponent;
+export default FooterComponent;

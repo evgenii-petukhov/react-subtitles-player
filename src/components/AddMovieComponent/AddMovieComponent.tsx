@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Parser from 'srt-parser-2';
-import BackButtonComponent from '../BackButtonComponent/BackButtonComponent';
+import FooterComponent from '../FooterComponent/FooterComponent';
 import './AddMovieComponent.scss';
 import { getSubtitlesKey } from '../../helpers/localStorageItemNameHelper';
 
@@ -63,9 +63,9 @@ const AddMovieComponent: React.FC = () => {
                     onChange={onContentChanged} rows={5} />
             </div>
         </form>
-        <BackButtonComponent isToolbarShown={true}>
+        <FooterComponent isToolbarShown={true}>
             <button disabled={!userInput.name || !userInput.content} onClick={onSubmitClicked}>Submit</button>
-        </BackButtonComponent>
+        </FooterComponent>
     </div>;
 };
 
