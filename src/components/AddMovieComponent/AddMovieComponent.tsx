@@ -53,14 +53,15 @@ const AddMovieComponent: React.FC = () => {
 
     return <div className='AddMovieComponent'>
         <form ref={getFormRefWraper} onSubmit={onFormSubmitted}>
-            <div className='form-row'>
-                Name: <input type='text'
-                    value={userInput?.name}
-                    onChange={onNameChanged} />
+            <div className="col-md-4 mb-3">
+                <label className="form-label">Movie name</label>
+                <input type="text" className="form-control" value={userInput?.name}
+                    onChange={onNameChanged}/>
             </div>
-            <div className='form-row'>
-                Subtitles: <textarea value={userInput?.content}
-                    onChange={onContentChanged} rows={5} />
+            <div className="col-md-4 mb-3">
+                <label className="form-label">Paste subtitles as text</label>
+                <textarea className="form-control" value={userInput?.content}
+                    onChange={onContentChanged} rows={5}></textarea>
             </div>
         </form>
         <FooterComponent isToolbarShown={true} isExitButtonShown={true}>
