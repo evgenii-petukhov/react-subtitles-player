@@ -13,7 +13,8 @@ const FooterComponent: React.FC<FooterComponentProps> = (props) => {
     };
 
     return <div className={`bottom-toolbar ${!props.isToolbarShown && 'hidden'}`}>
-        <button onClick={navigateBack}>Exit</button>
+        <button className='btn btn-dark'
+            onClick={navigateBack}>Exit</button>
         {props.children}
     </div>
 };

@@ -64,7 +64,9 @@ const AddMovieComponent: React.FC = () => {
             </div>
         </form>
         <FooterComponent isToolbarShown={true}>
-            <button disabled={!userInput.name || !userInput.content} onClick={onSubmitClicked}>Submit</button>
+            <button className='btn btn-dark'
+                disabled={!userInput.name || !userInput.content}
+                onClick={onSubmitClicked}>Submit</button>
         </FooterComponent>
     </div>;
 };

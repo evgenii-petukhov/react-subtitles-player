@@ -155,19 +155,25 @@ const MovieComponent: React.FC = () => {
             <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
                 {
                     playInfoRef.current.isStarted && <>
-                        <button className='round' onClick={() => rewind(30)}>&#8722;30s</button>
-                        <button className='round' onClick={() => rewind(5)}>&#8722;5s</button>
+                        <button className='btn btn-dark'
+                            onClick={() => rewind(30)}>&#8722;30s</button>
+                        <button className='btn btn-dark'
+                            onClick={() => rewind(5)}>&#8722;5s</button>
                     </>  
                 }
                 {
                     playInfoRef.current.isStarted
-                        ? <button onClick={() => stopTimer()}>Stop</button>
-                        : <button onClick={() => startTimer()}>Start</button>
+                        ? <button className='btn btn-dark'
+                            onClick={() => stopTimer()}>Stop</button>
+                        : <button className='btn btn-dark'
+                            onClick={() => startTimer()}>Start</button>
                 }
                 {
                     playInfoRef.current.isStarted && <>
-                        <button className='round' onClick={() => rewind(-5)}>+5s</button>
-                        <button className='round' onClick={() => rewind(-30)}>+30s</button>
+                        <button className='btn btn-dark'
+                            onClick={() => rewind(-5)}>+5s</button>
+                        <button className='btn btn-dark'
+                            onClick={() => rewind(-30)}>+30s</button>
                     </>
                 }
             </div>
@@ -175,7 +181,8 @@ const MovieComponent: React.FC = () => {
                 <div className='text'>{currentSubText}</div>
             </div>
             <FooterComponent isToolbarShown={isToolbarShown}>
-                <button onClick={() => enterFullscreen()}>Fullscreen</button>
+                <button className='btn btn-dark'
+                    onClick={() => enterFullscreen()}>Fullscreen</button>
             </FooterComponent>
         </FullScreen>
     </div>

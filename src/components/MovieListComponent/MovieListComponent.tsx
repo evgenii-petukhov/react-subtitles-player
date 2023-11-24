@@ -37,7 +37,7 @@ const MovieListComponent: React.FC = () => {
     return <div className="MovieListComponent">
         <div className='toolbar'>
             <Link to={`/add`}>
-                <button>Add new</button>
+                <button className='btn btn-dark'>Add subtitles as text</button>
             </Link>
         </div>
         <div className='movie-list'>
