@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './MovieListComponent.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { isMovieInfoItem, getMovieId } from '../../helpers/localStorageItemNameHelper';
 import FooterComponent from '../FooterComponent/FooterComponent';
 
@@ -11,6 +11,7 @@ interface IMovie {
 
 const MovieListComponent: React.FC = () => {
     const [movies, setMovies] = useState<IMovie[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const movieList = [];
@@ -31,12 +32,17 @@ const MovieListComponent: React.FC = () => {
             });
         }
 
+        if (!movieList.length) {
+            navigate('/add');
+            return;
+        }
+
         setMovies(movieList);
     }, []);
 
     const onRemoveAllClicked = (): void => {
         localStorage.clear();
-        window.location.reload();
+        navigate('/add');
     };
 
     return <div className="MovieListComponent">
