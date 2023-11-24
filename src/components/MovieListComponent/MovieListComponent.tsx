@@ -12,7 +12,6 @@ interface IMovie {
 const MovieListComponent: React.FC = () => {
     const [movies, setMovies] = useState<IMovie[]>([]);
 
-
     useEffect(() => {
         const movieList = [];
 
@@ -35,6 +34,11 @@ const MovieListComponent: React.FC = () => {
         setMovies(movieList);
     }, []);
 
+    const onRemoveAllClicked = (): void => {
+        localStorage.clear();
+        window.location.reload();
+    };
+
     return <div className="MovieListComponent">
         <div className="list-group">
             <div className="list-group-item list-group-item-action active" aria-current="true">Select a movie</div>
@@ -48,6 +52,8 @@ const MovieListComponent: React.FC = () => {
         <FooterComponent isToolbarShown={true} isExitButtonShown={false}>
             <Link to={`/add`}
                 className='btn btn-dark'>Add subtitles as text</Link>
+            <button className='btn btn-danger'
+                onClick={onRemoveAllClicked}>Remove all</button>
         </FooterComponent>
     </div>
 };
