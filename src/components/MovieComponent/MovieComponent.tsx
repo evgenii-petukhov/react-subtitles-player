@@ -59,7 +59,7 @@ const MovieComponent: React.FC = () => {
     }, []);
 
     const startTimer = (): void => {
-        const index = playInfoRef.current.isStarted ? getIndex(playInfoRef.current) : -1;
+        const index = playInfoRef.current.isStarted ? getIndex() : -1;
 
         if (!playInfoRef.current.isStarted) {
             playInfoRef.current = {
@@ -105,14 +105,10 @@ const MovieComponent: React.FC = () => {
         }
 
         if (index < subtitlesRef.current.length - 1) {
-            const interval = index === -1
-                ? subtitlesRef.current[0].startSeconds
-                : (subtitlesRef.current[index + 1].startSeconds - subtitlesRef.current[index].startSeconds);
-
             setSubtitleChangeTimerId(window.setTimeout(() => {
                 index++;
                 showSubs(index);
-            }, interval * 1000));
+            }, getTimeTillSubtitleByIndex(index + 1)));
         } else {
             stopTimer(playInfoRef.current);
         }
@@ -122,13 +118,20 @@ const MovieComponent: React.FC = () => {
         window.clearTimeout(subtitleChangeTimerId);
         playInfoRef.current.rewindMs += seconds * 1000;
         localStorage.setItem(getPlayInfoKey(), JSON.stringify(playInfoRef.current));
-        showSubs(getIndex(playInfoRef.current));
+        showSubs(getIndex());
     };
 
-    const getIndex = (playInfo: IPlayInfo): number => {
-        const startTimestamp = playInfo.startTimestamp + playInfo.rewindMs;
-        return subtitlesRef.current.findIndex(x => (startTimestamp + x.startSeconds * 1000) >= new Date().getTime());
+    const getIndex = (): number => {
+        const index = subtitlesRef.current.findIndex((_, index) => getTimeTillSubtitleByIndex(index));
+        return index > -1 ? index - 1 : -1;
     };
+
+    const getTimeTillSubtitleByIndex = (index: number): number => {
+        return subtitlesRef.current[index].startSeconds * 1000
+            - new Date().getTime()
+            + playInfoRef.current.startTimestamp
+            + playInfoRef.current.rewindMs;
+    }
 
     const hideToolbar = (): void => {
         setHideToolbarTimerId(window.setTimeout(() => {
@@ -155,25 +158,19 @@ const MovieComponent: React.FC = () => {
             <div className={`toolbar ${!isToolbarShown && 'hidden'}`}>
                 {
                     playInfoRef.current.isStarted && <>
-                        <button className='btn btn-dark'
-                            onClick={() => rewind(30)}>&#8722;30s</button>
-                        <button className='btn btn-dark'
-                            onClick={() => rewind(5)}>&#8722;5s</button>
-                    </>  
+                        <button className='btn btn-dark' onClick={() => rewind(30)}>&#8722;30s</button>
+                        <button className='btn btn-dark' onClick={() => rewind(5)}>&#8722;5s</button>
+                    </>
                 }
                 {
                     playInfoRef.current.isStarted
-                        ? <button className='btn btn-dark'
-                            onClick={() => stopTimer()}>Stop</button>
-                        : <button className='btn btn-dark'
-                            onClick={() => startTimer()}>Start</button>
+                        ? <button className='btn btn-dark' onClick={() => stopTimer()}>Stop</button>
+                        : <button className='btn btn-dark' onClick={() => startTimer()}>Start</button>
                 }
                 {
                     playInfoRef.current.isStarted && <>
-                        <button className='btn btn-dark'
-                            onClick={() => rewind(-5)}>+5s</button>
-                        <button className='btn btn-dark'
-                            onClick={() => rewind(-30)}>+30s</button>
+                        <button className='btn btn-dark' onClick={() => rewind(-5)}>+5s</button>
+                        <button className='btn btn-dark' onClick={() => rewind(-30)}>+30s</button>
                     </>
                 }
             </div>
@@ -181,8 +178,7 @@ const MovieComponent: React.FC = () => {
                 <div className='text'>{currentSubText}</div>
             </div>
             <FooterComponent isToolbarShown={isToolbarShown} isExitButtonShown={true}>
-                <button className='btn btn-dark'
-                    onClick={() => enterFullscreen()}>Fullscreen</button>
+                <button className='btn btn-dark' onClick={() => enterFullscreen()}>Fullscreen</button>
             </FooterComponent>
         </FullScreen>
     </div>
